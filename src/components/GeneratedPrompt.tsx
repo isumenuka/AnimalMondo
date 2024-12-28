@@ -1,5 +1,7 @@
 import React from 'react';
 import { Copy, Check } from 'lucide-react';
+import { Card } from './ui/Card';
+import { Button } from './ui/Button';
 
 interface GeneratedPromptProps {
   prompt: string;
@@ -19,30 +21,20 @@ export function GeneratedPrompt({ prompt }: GeneratedPromptProps) {
   };
 
   return (
-    <div className="bg-white shadow rounded-lg p-6">
+    <Card className="transition-all duration-300">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-medium text-gray-900">Generated Prompt</h2>
-        <button
+        <h2 className="text-xl font-semibold text-purple-900">Generated Prompt</h2>
+        <Button
           onClick={handleCopy}
-          className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
-          title="Copy to clipboard"
+          variant="secondary"
+          icon={copied ? <Check className="w-4 h-4 mr-1.5" /> : <Copy className="w-4 h-4 mr-1.5" />}
         >
-          {copied ? (
-            <>
-              <Check className="h-4 w-4 mr-1.5" />
-              Copied!
-            </>
-          ) : (
-            <>
-              <Copy className="h-4 w-4 mr-1.5" />
-              Copy
-            </>
-          )}
-        </button>
+          {copied ? 'Copied!' : 'Copy'}
+        </Button>
       </div>
-      <div className="bg-gray-50 rounded-lg p-4">
-        <p className="text-gray-700 whitespace-pre-wrap">{prompt}</p>
+      <div className="bg-purple-50 rounded-lg p-4 transition-colors duration-200 hover:bg-purple-100">
+        <p className="text-purple-800 whitespace-pre-wrap">{prompt}</p>
       </div>
-    </div>
+    </Card>
   );
 }

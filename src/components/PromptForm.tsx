@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Wand2 } from 'lucide-react';
 import { FormField } from './FormField';
 import { SettingField } from './SettingField';
 import { formFields } from '../config/formFields';
 import { PromptFormData } from '../types/prompt';
-import { SettingComponents } from '../types/settingTypes';
+import { suggestSettings } from '../lib/gemini/settingSuggestions';
+import { Container } from './ui/Container';
 
 interface PromptFormProps {
   onSubmit: (formData: PromptFormData) => void;
   isLoading: boolean;
 }
-
-const DEFAULT_STYLE = 'cinematic photorealistic rendering with dramatic lighting and rich, slightly desaturated colors';
 
 export function PromptForm({ onSubmit, isLoading }: PromptFormProps) {
   const [formData, setFormData] = useState<PromptFormData>({
@@ -21,73 +20,98 @@ export function PromptForm({ onSubmit, isLoading }: PromptFormProps) {
     angle: '',
     setting: '',
     colors: '',
-    style: DEFAULT_STYLE,
+    style: '',
   });
 
   const [settingComponents, setSettingComponents] = useState<Record<string, any>>({
     elements: []
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Update settings when subjects or angle changes
+  React.useEffect(() => {
+    const updateSettings = async () => {
+      if (formData.subject1 && formData.subject2 && formData.angle) {
+        try {
+          const suggestions = await suggestSettings(
+            formData.subject1, 
+            formData.subject2, 
+            formData.angle
+          );
+          setSettingComponents(prev => ({
+            ...prev,
+            lighting: suggestions.lighting,
+            atmosphere: suggestions.atmosphere
+          }));
+        } catch (error) {
+          console.error('Error getting suggestions:', error);
+        }
+      }
+    };
+    updateSettings();
+  }, [formData.subject1, formData.subject2, formData.angle]);
+
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     const elementsString = settingComponents.elements.join(', ');
-    const settingString = `a ${settingComponents.adjective} ${settingComponents.landscapeType} with ${settingComponents.lighting}, ${elementsString}, creating a ${settingComponents.atmosphere} atmosphere`;
+    const settingString = `a scene with ${settingComponents.lighting}, ${elementsString}, creating a ${settingComponents.atmosphere} atmosphere`;
     onSubmit({
       ...formData,
       setting: settingString
     });
-  };
+  }, [formData, settingComponents, onSubmit]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const nonSettingFields = formFields.filter(field => field.name !== 'setting');
+    setFormData(prev => ({ ...prev, [name]: value }));
+  }, []);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {formFields.slice(0, 2).map((field) => (
-          <FormField
-            key={field.name}
-            {...field}
-            value={formData[field.name]}
-            onChange={handleChange}
-          />
-        ))}
-      </div>
+    <Container>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {formFields.slice(0, 2).map((field) => (
+            <FormField
+              key={field.name}
+              {...field}
+              value={formData[field.name]}
+              onChange={handleChange}
+              className="w-full"
+            />
+          ))}
+        </div>
 
-      {nonSettingFields.slice(2).map((field) => (
-        field.name !== 'setting' && (
-          <FormField
-            key={field.name}
-            {...field}
-            value={formData[field.name]}
-            onChange={handleChange}
-          />
-        )
-      ))}
+        <div className="space-y-4">
+          {formFields.slice(2, 4).map((field) => (
+            <FormField
+              key={field.name}
+              {...field}
+              value={formData[field.name]}
+              onChange={handleChange}
+              className="w-full"
+            />
+          ))}
+        </div>
 
-      <SettingField
-        value={settingComponents}
-        onChange={setSettingComponents}
-      />
+        <SettingField
+          value={settingComponents}
+          onChange={setSettingComponents}
+        />
 
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {isLoading ? (
-          'Generating...'
-        ) : (
-          <>
-            <Wand2 className="w-4 h-4 mr-2" />
-            Generate Prompt
-          </>
-        )}
-      </button>
-    </form>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full sm:w-auto flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+        >
+          {isLoading ? (
+            'Generating...'
+          ) : (
+            <>
+              <Wand2 className="w-5 h-5 mr-2" />
+              Generate Prompt
+            </>
+          )}
+        </button>
+      </form>
+    </Container>
   );
 }
