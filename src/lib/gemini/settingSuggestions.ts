@@ -17,41 +17,36 @@ export async function suggestSettings(
 - Subject 2: "${subject2}"
 - Camera angle: "${selectedAngle}"
 
-Suggest the most appropriate lighting and atmosphere that would enhance this scene.
+Choose exactly one lighting and one atmosphere option that would create the most dramatic and cohesive scene.
 
-Choose from these lighting options:
-${settingOptions.lighting.map(l => `- ${l.label}`).join('\n')}
+Lighting options (choose ONE):
+${settingOptions.lighting.map(l => `- ${l.value}`).join('\n')}
 
-And these atmosphere options:
-${settingOptions.atmospheres.map(a => `- ${a.label}`).join('\n')}
-
-Consider:
-1. The nature and behavior of both subjects
-2. The emotional impact of the camera angle
-3. The time of day that would best suit this scene
-4. The mood you want to convey
+Atmosphere options (choose ONE):
+${settingOptions.atmospheres.map(a => `- ${a.value}`).join('\n')}
 
 Return ONLY the values in format: lighting|atmosphere`;
 
   try {
     const result = await model.generateContent(prompt);
-    const [lighting, atmosphere] = result.response.text().trim().split('|');
+    const response = result.response.text().trim();
+    const [lighting, atmosphere] = response.split('|').map(s => s.trim());
     
-    // Map the generated text back to option values
-    const lightingOption = settingOptions.lighting.find(l => 
-      l.label.toLowerCase() === lighting.toLowerCase().trim()
-    );
-    const atmosphereOption = settingOptions.atmospheres.find(a => 
-      a.label.toLowerCase() === atmosphere.toLowerCase().trim()
-    );
+    // Validate the responses match our options
+    const validLighting = settingOptions.lighting.find(l => l.value === lighting)?.value;
+    const validAtmosphere = settingOptions.atmospheres.find(a => a.value === atmosphere)?.value;
+
+    if (!validLighting || !validAtmosphere) {
+      throw new Error('Invalid AI response');
+    }
 
     return {
-      lighting: lightingOption?.value || settingOptions.lighting[0].value,
-      atmosphere: atmosphereOption?.value || settingOptions.atmospheres[0].value
+      lighting: validLighting,
+      atmosphere: validAtmosphere
     };
   } catch (error) {
     console.error('Error suggesting settings:', error);
-    // Fallback to default values
+    // Fallback to first options as default
     return {
       lighting: settingOptions.lighting[0].value,
       atmosphere: settingOptions.atmospheres[0].value

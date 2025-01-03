@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { Copy, Check, Clock } from 'lucide-react';
 
+interface Prompt {
+  positive: string;
+  negative: string;
+}
+
 interface PromptHistoryProps {
-  prompts: string[];
-  onCopy: (prompt: string) => void;
+  prompts: Prompt[];
+  onCopy: (prompt: Prompt) => void;
 }
 
 export function PromptHistory({ prompts, onCopy }: PromptHistoryProps) {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
-  const handleCopy = (prompt: string, index: number) => {
+  const handleCopy = (prompt: Prompt, index: number) => {
     onCopy(prompt);
     setCopiedIndex(index);
     setTimeout(() => setCopiedIndex(null), 2000);
@@ -26,7 +31,14 @@ export function PromptHistory({ prompts, onCopy }: PromptHistoryProps) {
       <div className="space-y-4">
         {prompts.map((prompt, index) => (
           <div key={index} className="group relative bg-purple-50 rounded-lg p-4 hover:bg-purple-100 transition-colors">
-            <p className="text-purple-800 pr-12">{prompt}</p>
+            <div className="space-y-2">
+              <p className="text-purple-800 pr-12">
+                <span className="font-medium">Positive:</span> {prompt.positive}
+              </p>
+              <p className="text-red-800 pr-12">
+                <span className="font-medium">Negative:</span> {prompt.negative}
+              </p>
+            </div>
             <button
               onClick={() => handleCopy(prompt, index)}
               className="absolute right-4 top-4 p-1.5 rounded-md text-purple-500 hover:text-purple-700 hover:bg-white transition-colors"

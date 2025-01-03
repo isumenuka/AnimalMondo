@@ -10,22 +10,22 @@ interface AISuggestionsProps {
 }
 
 export function AISuggestions({ lighting, atmosphere, onRefresh }: AISuggestionsProps) {
-  // Memoize label lookups
-  const lightingLabel = React.useMemo(() => 
-    settingOptions.lighting.find(l => l.value === lighting)?.label,
+  const lightingOption = React.useMemo(() => 
+    settingOptions.lighting.find(l => l.value === lighting),
     [lighting]
   );
   
-  const atmosphereLabel = React.useMemo(() => 
-    settingOptions.atmospheres.find(a => a.value === atmosphere)?.label,
+  const atmosphereOption = React.useMemo(() => 
+    settingOptions.atmospheres.find(a => a.value === atmosphere),
     [atmosphere]
   );
 
-  // Memoize refresh handler
   const handleRefresh = React.useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     onRefresh();
   }, [onRefresh]);
+
+  if (!lightingOption || !atmosphereOption) return null;
 
   return (
     <div className="bg-purple-50 p-4 rounded-md relative transform transition-all duration-300 hover:shadow-md">
@@ -44,15 +44,11 @@ export function AISuggestions({ lighting, atmosphere, onRefresh }: AISuggestions
       <div className="space-y-2">
         <p className="text-sm text-purple-700 flex items-center justify-between">
           <span className="font-medium">Lighting:</span>
-          <span className="text-purple-900 transition-all duration-200">
-            {lightingLabel || 'Select lighting'}
-          </span>
+          <span className="text-purple-900">{lightingOption.label}</span>
         </p>
         <p className="text-sm text-purple-700 flex items-center justify-between">
           <span className="font-medium">Atmosphere:</span>
-          <span className="text-purple-900 transition-all duration-200">
-            {atmosphereLabel || 'Select atmosphere'}
-          </span>
+          <span className="text-purple-900">{atmosphereOption.label}</span>
         </p>
       </div>
     </div>

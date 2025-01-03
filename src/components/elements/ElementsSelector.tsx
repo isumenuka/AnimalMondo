@@ -12,21 +12,30 @@ interface ElementsSelectorProps {
 
 export function ElementsSelector({ options, selectedElements, onChange, onSuggest }: ElementsSelectorProps) {
   const handleElementToggle = (value: string) => {
-    const newElements = selectedElements.includes(value)
-      ? selectedElements.filter(e => e !== value)
-      : [...selectedElements, value];
-    onChange(newElements);
+    if (selectedElements.includes(value)) {
+      // Remove element if already selected
+      onChange(selectedElements.filter(e => e !== value));
+    } else if (selectedElements.length < 3) {
+      // Add element only if under limit
+      onChange([...selectedElements, value]);
+    }
+  };
+
+  const handleSuggest = () => {
+    // Clear current selection before suggesting new elements
+    onChange([]);
+    onSuggest();
   };
 
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
         <label className="block text-sm font-medium text-gray-700">
-          Elements (Select multiple)
+          Elements (Select up to 3)
         </label>
         <Button
           variant="secondary"
-          onClick={onSuggest}
+          onClick={handleSuggest}
           className="p-1.5 h-8 bg-purple-100 hover:bg-purple-200 border-purple-200"
           icon={<Wand2 className="w-4 h-4 mr-1" />}
         >
@@ -34,30 +43,46 @@ export function ElementsSelector({ options, selectedElements, onChange, onSugges
         </Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {options.map((option) => (
-          <label
-            key={option.value}
-            className={`
-              relative flex items-start p-3 rounded-lg border cursor-pointer transition-all duration-200
-              ${selectedElements.includes(option.value)
-                ? 'border-purple-500 bg-purple-50 transform scale-[1.02]'
-                : 'border-gray-200 hover:bg-gray-50'}
-            `}
-          >
-            <div className="flex items-center h-5">
-              <input
-                type="checkbox"
-                checked={selectedElements.includes(option.value)}
-                onChange={() => handleElementToggle(option.value)}
-                className="h-4 w-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500"
-              />
-            </div>
-            <div className="ml-3 text-sm">
-              <span className="font-medium text-gray-700">{option.label}</span>
-            </div>
-          </label>
-        ))}
+        {options.map((option) => {
+          const isSelected = selectedElements.includes(option.value);
+          const isDisabled = selectedElements.length >= 3 && !isSelected;
+
+          return (
+            <label
+              key={option.value}
+              className={`
+                relative flex items-start p-3 rounded-lg border cursor-pointer transition-all duration-200
+                ${isSelected 
+                  ? 'border-purple-500 bg-purple-50 transform scale-[1.02]' 
+                  : isDisabled
+                    ? 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
+                    : 'border-gray-200 hover:bg-gray-50'
+                }
+              `}
+            >
+              <div className="flex items-center h-5">
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  disabled={isDisabled}
+                  onChange={() => handleElementToggle(option.value)}
+                  className="h-4 w-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500 disabled:opacity-50"
+                />
+              </div>
+              <div className="ml-3 text-sm">
+                <span className={`font-medium ${isDisabled ? 'text-gray-400' : 'text-gray-700'}`}>
+                  {option.label}
+                </span>
+              </div>
+            </label>
+          );
+        })}
       </div>
+      {selectedElements.length >= 3 && (
+        <p className="text-sm text-purple-600 mt-2">
+          Maximum of 3 elements selected
+        </p>
+      )}
     </div>
   );
 }

@@ -8,9 +8,14 @@ import { PromptFormData } from './types/prompt';
 import { Card } from './components/ui/Card';
 import { Footer } from './components/ui/Footer';
 
+interface Prompt {
+  positive: string;
+  negative: string;
+}
+
 export default function App() {
-  const [generatedPrompt, setGeneratedPrompt] = useState<string>('');
-  const [promptHistory, setPromptHistory] = useState<string[]>([]);
+  const [generatedPrompt, setGeneratedPrompt] = useState<Prompt | null>(null);
+  const [promptHistory, setPromptHistory] = useState<Prompt[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
 
@@ -28,11 +33,12 @@ export default function App() {
     }
   };
 
-  const handleCopy = async (prompt: string) => {
+  const handleCopy = async (prompt: Prompt) => {
     try {
-      await navigator.clipboard.writeText(prompt);
+      const text = `Positive Prompt:\n${prompt.positive}\n\nNegative Prompt:\n${prompt.negative}`;
+      await navigator.clipboard.writeText(text);
     } catch (err) {
-      console.error('Failed to copy text:', err);
+      console.error('Failed to copy prompt:', err);
     }
   };
 

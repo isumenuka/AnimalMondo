@@ -5,17 +5,30 @@ export function getSuggestedElements(lighting: string, atmosphere: string): stri
   const lightingElements = lightingToElements[lighting as keyof typeof lightingToElements] || [];
   const atmosphereElements = atmosphereToElements[atmosphere as keyof typeof atmosphereToElements] || [];
   
-  // Find common elements that work well with both conditions
+  // Find common elements between lighting and atmosphere
   const commonElements = lightingElements.filter(element => 
     atmosphereElements.includes(element)
   );
   
-  // If we have enough common elements, use those
-  if (commonElements.length >= 3) {
-    return commonElements.slice(0, 4);
+  // Always return exactly 2-3 elements
+  const targetCount = 2 + Math.floor(Math.random() * 2); // Returns either 2 or 3
+  
+  if (commonElements.length >= targetCount) {
+    // If we have enough common elements, randomly select from them
+    return shuffleArray(commonElements).slice(0, targetCount);
   }
   
-  // Otherwise, combine unique elements from both sets
-  const uniqueElements = Array.from(new Set([...lightingElements, ...atmosphereElements]));
-  return uniqueElements.slice(0, 4);
+  // If we don't have enough common elements, combine unique elements from both sets
+  const allElements = [...new Set([...lightingElements, ...atmosphereElements])];
+  return shuffleArray(allElements).slice(0, targetCount);
+}
+
+// Fisher-Yates shuffle algorithm for better randomization
+function shuffleArray<T>(array: T[]): T[] {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
 }
