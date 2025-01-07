@@ -27,29 +27,6 @@ export function PromptForm({ onSubmit, isLoading }: PromptFormProps) {
     elements: []
   });
 
-  // Update settings when subjects or angle changes
-  React.useEffect(() => {
-    const updateSettings = async () => {
-      if (formData.subject1 && formData.subject2 && formData.angle) {
-        try {
-          const suggestions = await suggestSettings(
-            formData.subject1, 
-            formData.subject2, 
-            formData.angle
-          );
-          setSettingComponents(prev => ({
-            ...prev,
-            lighting: suggestions.lighting,
-            atmosphere: suggestions.atmosphere
-          }));
-        } catch (error) {
-          console.error('Error getting suggestions:', error);
-        }
-      }
-    };
-    updateSettings();
-  }, [formData.subject1, formData.subject2, formData.angle]);
-
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     const elementsString = settingComponents.elements.join(', ');
@@ -95,6 +72,12 @@ export function PromptForm({ onSubmit, isLoading }: PromptFormProps) {
         <SettingField
           value={settingComponents}
           onChange={setSettingComponents}
+          formData={{
+            subject1: formData.subject1,
+            subject2: formData.subject2,
+            action: formData.action,
+            angle: formData.angle
+          }}
         />
 
         <button
