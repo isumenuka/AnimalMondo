@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wand2 } from 'lucide-react';
+import { Wand2, Loader2 } from 'lucide-react';
 import { ElementOption } from '../../types/settingTypes';
 import { Button } from '../ui/Button';
 
@@ -8,23 +8,22 @@ interface ElementsSelectorProps {
   selectedElements: string[];
   onChange: (elements: string[]) => void;
   onSuggest: () => void;
+  isRefreshing?: boolean;
 }
 
-export function ElementsSelector({ options, selectedElements, onChange, onSuggest }: ElementsSelectorProps) {
+export function ElementsSelector({ 
+  options, 
+  selectedElements, 
+  onChange, 
+  onSuggest,
+  isRefreshing = false 
+}: ElementsSelectorProps) {
   const handleElementToggle = (value: string) => {
     if (selectedElements.includes(value)) {
-      // Remove element if already selected
       onChange(selectedElements.filter(e => e !== value));
     } else if (selectedElements.length < 3) {
-      // Add element only if under limit
       onChange([...selectedElements, value]);
     }
-  };
-
-  const handleSuggest = () => {
-    // Clear current selection before suggesting new elements
-    onChange([]);
-    onSuggest();
   };
 
   return (
@@ -35,13 +34,15 @@ export function ElementsSelector({ options, selectedElements, onChange, onSugges
         </label>
         <Button
           variant="secondary"
-          onClick={handleSuggest}
+          onClick={onSuggest}
+          disabled={isRefreshing}
           className="p-1.5 h-8 bg-purple-100 hover:bg-purple-200 border-purple-200"
-          icon={<Wand2 className="w-4 h-4 mr-1" />}
+          icon={isRefreshing ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Wand2 className="w-4 h-4 mr-1" />}
         >
-          Suggest Elements
+          {isRefreshing ? 'Suggesting...' : 'Suggest Elements'}
         </Button>
       </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {options.map((option) => {
           const isSelected = selectedElements.includes(option.value);
@@ -78,6 +79,7 @@ export function ElementsSelector({ options, selectedElements, onChange, onSugges
           );
         })}
       </div>
+      
       {selectedElements.length >= 3 && (
         <p className="text-sm text-purple-600 mt-2">
           Maximum of 3 elements selected

@@ -1,36 +1,59 @@
-import React from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { settingOptions } from '../types/settingTypes';
 import { ElementsSelector } from './elements/ElementsSelector';
 import { elementOptions } from '../config/elementOptions';
-import { AISuggestions } from './settings/AISuggestions';
-import { getSuggestedElements } from '../lib/utils/elementSuggestions';
+import { getAISuggestedElements } from '../lib/gemini/elementSuggestions';
 
 interface SettingFieldProps {
   value: Record<string, any>;
   onChange: (settingComponents: Record<string, any>) => void;
+  formData: {
+    subject1: string;
+    subject2: string;
+    action: string;
+    angle: string;
+  };
 }
 
-export function SettingField({ value, onChange }: SettingFieldProps) {
-  // Handle component changes
-  const handleComponentChange = React.useCallback((component: string, selectedValue: string | string[]) => {
+export function SettingField({ value, onChange, formData }: SettingFieldProps) {
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [hasInitialSuggestion, setHasInitialSuggestion] = useState(false);
+
+  const handleComponentChange = useCallback((component: string, selectedValue: string | string[]) => {
     onChange(prev => ({ ...prev, [component]: selectedValue }));
   }, [onChange]);
 
-  // Handle refresh suggestions
-  const handleRefreshSuggestions = React.useCallback(() => {
-    if (value.lighting && value.atmosphere) {
-      const suggestedElements = getSuggestedElements(value.lighting, value.atmosphere);
-      onChange(prev => ({ ...prev, elements: suggestedElements }));
+  const handleRefreshSuggestions = useCallback(async () => {
+    if (!formData.subject1 || !formData.subject2 || !value.lighting || !value.atmosphere) return;
+    
+    setIsRefreshing(true);
+    try {
+      const elements = await getAISuggestedElements(
+        formData.subject1,
+        formData.subject2,
+        value.lighting,
+        value.atmosphere,
+        formData.action,
+        formData.angle
+      );
+      onChange(prev => ({ ...prev, elements }));
+    } catch (error) {
+      console.error('Error refreshing suggestions:', error);
+    } finally {
+      setIsRefreshing(false);
     }
-  }, [value.lighting, value.atmosphere, onChange]);
+  }, [formData, value.lighting, value.atmosphere, onChange]);
 
-  // Update elements when lighting or atmosphere changes
-  React.useEffect(() => {
-    if (value.lighting && value.atmosphere) {
-      const suggestedElements = getSuggestedElements(value.lighting, value.atmosphere);
-      onChange(prev => ({ ...prev, elements: suggestedElements }));
+  useEffect(() => {
+    if (!hasInitialSuggestion && 
+        value.lighting && 
+        value.atmosphere && 
+        formData.subject1 && 
+        formData.subject2) {
+      setHasInitialSuggestion(true);
+      handleRefreshSuggestions();
     }
-  }, [value.lighting, value.atmosphere, onChange]);
+  }, [value.lighting, value.atmosphere, formData.subject1, formData.subject2, hasInitialSuggestion, handleRefreshSuggestions]);
 
   return (
     <div className="space-y-4">
@@ -74,17 +97,12 @@ export function SettingField({ value, onChange }: SettingFieldProps) {
 
       {value.lighting && value.atmosphere && (
         <div className="space-y-4 animate-fadeIn">
-          <AISuggestions
-            lighting={value.lighting}
-            atmosphere={value.atmosphere}
-            onRefresh={handleRefreshSuggestions}
-          />
-
           <ElementsSelector
             options={elementOptions}
             selectedElements={value.elements || []}
             onChange={(elements) => handleComponentChange('elements', elements)}
             onSuggest={handleRefreshSuggestions}
+            isRefreshing={isRefreshing}
           />
         </div>
       )}

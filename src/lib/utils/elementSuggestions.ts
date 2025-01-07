@@ -1,29 +1,34 @@
-import { lightingToElements, atmosphereToElements } from './elementMappings';
+import { lightingToElements, atmosphereToElements, getElementsForAnimal } from './elementMappings';
 
-export function getSuggestedElements(lighting: string, atmosphere: string): string[] {
-  // Get elements that match both lighting and atmosphere
+export function getSuggestedElements(
+  lighting: string,
+  atmosphere: string,
+  subject1?: string,
+  subject2?: string
+): string[] {
+  // Get elements based on animals
+  const animal1Elements = subject1 ? getElementsForAnimal(subject1) : [];
+  const animal2Elements = subject2 ? getElementsForAnimal(subject2) : [];
+  
+  // Get elements that match lighting and atmosphere
   const lightingElements = lightingToElements[lighting as keyof typeof lightingToElements] || [];
   const atmosphereElements = atmosphereToElements[atmosphere as keyof typeof atmosphereToElements] || [];
   
-  // Find common elements between lighting and atmosphere
-  const commonElements = lightingElements.filter(element => 
-    atmosphereElements.includes(element)
-  );
+  // Combine all relevant elements
+  const allRelevantElements = [
+    ...new Set([
+      ...animal1Elements,
+      ...animal2Elements,
+      ...lightingElements,
+      ...atmosphereElements
+    ])
+  ];
   
-  // Always return exactly 2-3 elements
+  // Select 2-3 elements that best match the scene
   const targetCount = 2 + Math.floor(Math.random() * 2); // Returns either 2 or 3
-  
-  if (commonElements.length >= targetCount) {
-    // If we have enough common elements, randomly select from them
-    return shuffleArray(commonElements).slice(0, targetCount);
-  }
-  
-  // If we don't have enough common elements, combine unique elements from both sets
-  const allElements = [...new Set([...lightingElements, ...atmosphereElements])];
-  return shuffleArray(allElements).slice(0, targetCount);
+  return shuffleArray(allRelevantElements).slice(0, targetCount);
 }
 
-// Fisher-Yates shuffle algorithm for better randomization
 function shuffleArray<T>(array: T[]): T[] {
   const newArray = [...array];
   for (let i = newArray.length - 1; i > 0; i--) {
