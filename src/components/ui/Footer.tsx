@@ -1,39 +1,20 @@
 import React from 'react';
-import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
+import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
 
 const socialLinks = [
-  {
-    icon: <Facebook className="w-5 h-5" />,
-    href: 'https://facebook.com',
-    label: 'Facebook',
-  },
-  {
-    icon: <Instagram className="w-5 h-5" />,
-    href: 'https://instagram.com',
-    label: 'Instagram',
-  },
-  {
-    icon: <Linkedin className="w-5 h-5" />,
-    href: 'https://linkedin.com',
-    label: 'LinkedIn',
-  },
-  {
-    icon: <Twitter className="w-5 h-5" />,
-    href: 'https://x.com',
-    label: 'X (Twitter)',
-  },
+  { icon: <Github className="w-5 h-5" />, href: 'https://github.com/isumenuka', label: 'GitHub' },
+  { icon: <Twitter className="w-5 h-5" />, href: 'https://x.com/ezsumm', label: 'X (Twitter)' },
+  { icon: <Linkedin className="w-5 h-5" />, href: 'https://www.linkedin.com/in/ezsumm/', label: 'LinkedIn' },
 ];
 
 export function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="mt-12 border-t border-gray-100 bg-white/50 backdrop-blur-sm">
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-          <p className="text-sm text-gray-600">
-            © 2024 ezsumm | All rights reserved
-          </p>
-          
-          <div className="flex gap-4">
+    <footer className="mt-auto border-t border-gray-100 bg-white/80 backdrop-blur-sm">
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <div className="flex flex-col items-center space-y-6">
+          <div className="flex gap-6">
             {socialLinks.map((link) => (
               <a
                 key={link.label}
@@ -47,6 +28,10 @@ export function Footer() {
               </a>
             ))}
           </div>
+          
+          <p className="text-sm text-gray-500">
+            © {currentYear} AI Prompt Generator. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
