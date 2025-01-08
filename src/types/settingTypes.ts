@@ -33,17 +33,37 @@ export const settingOptions = {
     { value: 'jungle', label: 'Jungle' }
   ],
   lighting: [
-    { value: 'diffused-sunlight-filtering-through-clouds', label: 'Diffused Sunlight Through Clouds' },
-    { value: 'dramatic-crepuscular-rays', label: 'Dramatic Crepuscular Rays' },
-    { value: 'soft-ambient-twilight-glow', label: 'Soft Ambient Twilight Glow' },
-    { value: 'swirling-storm-clouds', label: 'Swirling Storm Clouds' },
-    { value: 'golden-rays-piercing-through', label: 'Golden Rays Piercing Through' }
+    { value: 'diffused-sunlight', label: 'Diffused Sunlight Through Clouds' },
+    { value: 'dramatic-crepuscular', label: 'Dramatic Crepuscular Rays' },
+    { value: 'soft-ambient', label: 'Soft Ambient Twilight Glow' },
+    { value: 'storm-clouds', label: 'Swirling Storm Clouds' },
+    { value: 'golden-rays', label: 'Golden Rays Piercing Through' },
+    { value: 'moonlit-night', label: 'Moonlit Night' },
+    { value: 'dawn-mist', label: 'Dawn Mist with First Light' },
+    { value: 'dusk-shadows', label: 'Long Dusk Shadows' },
+    { value: 'overcast-diffused', label: 'Overcast Diffused Light' },
+    { value: 'dramatic-backlight', label: 'Dramatic Backlight' },
+    { value: 'rim-lighting', label: 'Natural Rim Lighting' },
+    { value: 'foggy-rays', label: 'Foggy Light Rays' },
+    { value: 'starlit-night', label: 'Starlit Night Sky' },
+    { value: 'rainbow-light', label: 'Post-Storm Rainbow Light' },
+    { value: 'aurora-glow', label: 'Aurora Borealis Glow' }
   ],
   atmospheres: [
     { value: 'ethereal', label: 'Ethereal' },
     { value: 'intense', label: 'Intense' },
     { value: 'mystical', label: 'Mystical' },
     { value: 'ominous', label: 'Ominous' },
-    { value: 'primordial', label: 'Primordial' }
+    { value: 'primordial', label: 'Primordial' },
+    { value: 'serene', label: 'Serene' },
+    { value: 'dramatic', label: 'Dramatic' },
+    { value: 'mysterious', label: 'Mysterious' },
+    { value: 'tranquil', label: 'Tranquil' },
+    { value: 'foreboding', label: 'Foreboding' },
+    { value: 'majestic', label: 'Majestic' },
+    { value: 'haunting', label: 'Haunting' },
+    { value: 'enchanted', label: 'Enchanted' },
+    { value: 'savage', label: 'Savage' },
+    { value: 'peaceful', label: 'Peaceful' }
   ]
 };

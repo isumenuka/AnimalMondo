@@ -43,8 +43,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-purple-100 to-purple-200">
-      <main className="py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-purple-100 to-purple-200 flex flex-col">
+      <main className="flex-grow py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="text-center transform transition-all duration-500 hover:scale-105">
             <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-800 flex items-center justify-center gap-3 mb-6">
