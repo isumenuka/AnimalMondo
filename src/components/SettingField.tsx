@@ -3,6 +3,7 @@ import { settingOptions } from '../types/settingTypes';
 import { ElementsSelector } from './elements/ElementsSelector';
 import { elementOptions } from '../config/elementOptions';
 import { getAISuggestedElements } from '../lib/gemini/elementSuggestions';
+import { Loader2 } from 'lucide-react';
 
 interface SettingFieldProps {
   value: Record<string, any>;
@@ -13,9 +14,10 @@ interface SettingFieldProps {
     action: string;
     angle: string;
   };
+  isLoadingSuggestions?: boolean;
 }
 
-export function SettingField({ value, onChange, formData }: SettingFieldProps) {
+export function SettingField({ value, onChange, formData, isLoadingSuggestions = false }: SettingFieldProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [hasInitialSuggestion, setHasInitialSuggestion] = useState(false);
 
@@ -57,7 +59,12 @@ export function SettingField({ value, onChange, formData }: SettingFieldProps) {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-gray-900">Setting Components</h3>
+      <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+        Setting Components
+        {isLoadingSuggestions && (
+          <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
+        )}
+      </h3>
       
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
@@ -67,6 +74,7 @@ export function SettingField({ value, onChange, formData }: SettingFieldProps) {
           value={value.lighting || ''}
           onChange={(e) => handleComponentChange('lighting', e.target.value)}
           className="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 transition-all duration-200"
+          disabled={isLoadingSuggestions}
         >
           <option value="">Select Lighting</option>
           {settingOptions.lighting.map((option) => (
@@ -85,6 +93,7 @@ export function SettingField({ value, onChange, formData }: SettingFieldProps) {
           value={value.atmosphere || ''}
           onChange={(e) => handleComponentChange('atmosphere', e.target.value)}
           className="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 transition-all duration-200"
+          disabled={isLoadingSuggestions}
         >
           <option value="">Select Atmosphere</option>
           {settingOptions.atmospheres.map((option) => (

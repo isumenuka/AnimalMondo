@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Wand2 } from 'lucide-react';
 import { FormField } from './FormField';
 import { SettingField } from './SettingField';
@@ -26,6 +26,36 @@ export function PromptForm({ onSubmit, isLoading }: PromptFormProps) {
   const [settingComponents, setSettingComponents] = useState<Record<string, any>>({
     elements: []
   });
+
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+
+  // Effect to trigger AI suggestions when required fields are filled
+  useEffect(() => {
+    const getAISuggestions = async () => {
+      if (formData.subject1 && formData.subject2 && formData.action && formData.angle) {
+        setIsLoadingSuggestions(true);
+        try {
+          const suggestions = await suggestSettings(
+            formData.subject1,
+            formData.subject2,
+            formData.angle
+          );
+          
+          setSettingComponents(prev => ({
+            ...prev,
+            lighting: suggestions.lighting,
+            atmosphere: suggestions.atmosphere
+          }));
+        } catch (error) {
+          console.error('Error getting AI suggestions:', error);
+        } finally {
+          setIsLoadingSuggestions(false);
+        }
+      }
+    };
+
+    getAISuggestions();
+  }, [formData.subject1, formData.subject2, formData.action, formData.angle]);
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -78,11 +108,12 @@ export function PromptForm({ onSubmit, isLoading }: PromptFormProps) {
             action: formData.action,
             angle: formData.angle
           }}
+          isLoadingSuggestions={isLoadingSuggestions}
         />
 
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || isLoadingSuggestions}
           className="w-full sm:w-auto flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
         >
           {isLoading ? (
