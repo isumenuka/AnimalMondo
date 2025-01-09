@@ -15,7 +15,6 @@ export const elementOptions: ElementOption[] = [
   { value: 'sunlight-dappling', label: 'Sunlight Dappling' },
   { value: 'flowering-wildflowers', label: 'Flowering Wildflowers' },
   { value: 'crystal-clear-stream', label: 'Crystal-Clear Stream' },
-  { value: 'soaring-birds-of-prey', label: 'Soaring Birds of Prey' },
   { value: 'ancient-redwood-trees', label: 'Ancient Redwood Trees' },
   { value: 'luminous-mushrooms', label: 'Luminous Mushrooms' },
   { value: 'moss-covered-log', label: 'A Moss-Covered Log' },
