@@ -33,11 +33,13 @@ export const settingOptions = {
     { value: 'jungle', label: 'Jungle' }
   ],
   lighting: [
+    // Original options
     { value: 'diffused-sunlight', label: 'Diffused Sunlight Through Clouds' },
     { value: 'dramatic-crepuscular', label: 'Dramatic Crepuscular Rays' },
     { value: 'soft-ambient', label: 'Soft Ambient Twilight Glow' },
     { value: 'storm-clouds', label: 'Swirling Storm Clouds' },
     { value: 'golden-rays', label: 'Golden Rays Piercing Through' },
+    // Additional lighting options
     { value: 'moonlit-night', label: 'Moonlit Night' },
     { value: 'dawn-mist', label: 'Dawn Mist with First Light' },
     { value: 'dusk-shadows', label: 'Long Dusk Shadows' },
@@ -50,11 +52,13 @@ export const settingOptions = {
     { value: 'aurora-glow', label: 'Aurora Borealis Glow' }
   ],
   atmospheres: [
+    // Original options
     { value: 'ethereal', label: 'Ethereal' },
     { value: 'intense', label: 'Intense' },
     { value: 'mystical', label: 'Mystical' },
     { value: 'ominous', label: 'Ominous' },
     { value: 'primordial', label: 'Primordial' },
+    // Additional atmosphere options
     { value: 'serene', label: 'Serene' },
     { value: 'dramatic', label: 'Dramatic' },
     { value: 'mysterious', label: 'Mysterious' },
