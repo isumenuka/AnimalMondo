@@ -30,7 +30,7 @@ export function Footer() {
           </div>
           
           <p className="text-sm text-gray-500">
-            © {currentYear} AI Prompt Generator. All rights reserved.
+            © {currentYear} AnimalMondo by ezsumm. All rights reserved.
           </p>
         </div>
       </div>
